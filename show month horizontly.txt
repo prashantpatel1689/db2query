@@ -1,0 +1,20 @@
+with temp as (
+select C_year,cmonth ,dis_wt,
+      rownumber() over (partition by C_year) as rownum 
+      FROM (SELECT  substr(a.shipDate,1,4) AS C_year,substr(a.shipDate,5,2) as cmonth, (CAST (SUM(b.stockWgt) AS NUMERIC (10, 2))) as dis_wt  FROM db.TBSH031 a  JOIN db.TBSH032 b on a.compId = b.compId AND a.deliveryNo = b.deliveryNo WHERE substr(a.shipDate,1,4) = '2019' group by substr(a.shipDate,1,4) ,substr(a.shipDate,5,2))
+ )
+ select C_year,
+      max(case when rownum = 1 Then dis_wt ELSE 0  end) as JAN,
+      max(case when rownum = 2 Then dis_wt ELSE 0 end) as FEB,
+      max(case when rownum = 3 Then dis_wt ELSE 0 end) as MAR,
+      max(case when rownum = 4 Then dis_wt ELSE 0 end) as APR,
+      max(case when rownum = 5 Then dis_wt ELSE 0 end) as MAY,
+      max(case when rownum = 6 Then dis_wt ELSE 0 end) as JUN,
+      max(case when rownum = 7 Then dis_wt ELSE 0 end) as JULY,
+      max(case when rownum = 8 Then dis_wt ELSE 0 end) as AUG,
+      max(case when rownum = 9 Then dis_wt  ELSE 0 end) as SEP,
+      max(case when rownum = 10 Then dis_wt ELSE 0 end) as OCT,
+      max(case when rownum = 11 Then dis_wt ELSE 0 end) as NOV,
+      max(case when rownum = 12 Then dis_wt ELSE 0 end) as DEC1
+     from temp
+group by C_year
